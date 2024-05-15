@@ -1,0 +1,54 @@
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub User Repositories</title>
+</head>
+<body>
+  <h1>GitHub User Repositories</h1>
+  <input type="text" id="usernameInput" placeholder="Enter GitHub Username">
+  <button onclick="fetchRepositories()">Fetch Repositories</button>
+  <ul id="repositoryList"></ul>
+  <div id="zeroState" style="display: none;">No repositories found for this user.</div>
+  <div>
+    <a href="https://github.com/Anjitinku/fyle-internship-challenge-23.git">Link to Repository</a>
+  </div>
+
+  <script>
+    function fetchRepositories() {
+      var username = document.getElementById("usernameInput").value;
+      var apiUrl = `https://api.github.com/users/${username}/repos`;
+
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('User not found');
+          }
+          return response.json();
+        })
+        .then(repos => {
+          var repositoryList = document.getElementById("repositoryList");
+          repositoryList.innerHTML = ''; // Clear previous list
+
+          if (repos.length === 0) {
+            document.getElementById("zeroState").style.display = "block";
+          } else {
+            repos.forEach(repo => {
+              var listItem = document.createElement("li");
+              var link = document.createElement("a");
+              link.href = repo.html_url;
+              link.textContent = repo.name;
+              listItem.appendChild(link);
+              repositoryList.appendChild(listItem);
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching repositories:", error);
+          document.getElementById("zeroState").style.display = "none";
+        });
+    }
+  </script>
+</body>
+</html>
